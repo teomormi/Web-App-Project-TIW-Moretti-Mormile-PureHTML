@@ -33,9 +33,10 @@ public class AlbumDAO {
 	}
 	
 	public Album getAlbumByID(int id) throws SQLException{
-		String query = "SELECT * FROM album ORDER BY date DESC";
+		String query = "SELECT * FROM album WHERE albumID = ? ORDER BY date DESC";
 		Album album = new Album();
 		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
+			pstatement.setInt(1, id);
 			try(ResultSet result = pstatement.executeQuery()) {
 				if(!result.isBeforeFirst())
 					return null;

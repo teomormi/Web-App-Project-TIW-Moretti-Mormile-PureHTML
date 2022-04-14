@@ -39,13 +39,11 @@ public class CommentDAO {
 		if(comment==null || comment.equals(""))
 			throw new BadCommentException("Comment isn't valid");
 		String query = "INSERT into comment (user, text, image) VALUES(?, ?, ?)";
-		connection.setAutoCommit(false);
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setInt(1, idUser);
 			pstatement.setString(2, comment);
 			pstatement.setInt(3, idImg);
 			pstatement.executeUpdate();
-			connection.commit();
 		} catch (SQLException e) {
 			connection.rollback();
 			throw e;

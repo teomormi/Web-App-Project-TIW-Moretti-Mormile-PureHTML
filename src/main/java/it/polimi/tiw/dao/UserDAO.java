@@ -16,7 +16,7 @@ public class UserDAO {
 	}
 	
 	public User checkLogin(String nickname, String password, String email) throws SQLException{
-		String query = "SELECT * FROM user where (nickname = ? OR email = ? ) AND password = ?";
+		String query = "SELECT * FROM user where (nickname = ? OR email = ?)  AND password = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setString(1,nickname);
 			pstatement.setString(2, email);
@@ -55,7 +55,7 @@ public class UserDAO {
 		
 	}
 	
-	boolean isMailAvailable(String mail) throws SQLException {
+	public boolean isMailAvailable(String mail) throws SQLException {
 		String query = "SELECT * FROM user where email = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setString(1,mail);
@@ -66,7 +66,7 @@ public class UserDAO {
 			}
 		}
 	}
-	boolean isNicknameAvailable(String nick) throws SQLException {
+	public boolean isNicknameAvailable(String nick) throws SQLException {
 		String query = "SELECT * FROM user where nickname = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setString(1,nick);
@@ -94,13 +94,11 @@ public class UserDAO {
 			
 		
 		String query = "INSERT into user (username, email, password) VALUES(?, ?, ?)";
-		connection.setAutoCommit(false);
 		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
 			pstatement.setString(1, nickname);
 			pstatement.setString(2, email);
 			pstatement.setString(3, password);
 			pstatement.executeUpdate();
-			connection.commit();
 		} catch (SQLException e) {
 			connection.rollback();
 			throw e;
