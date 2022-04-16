@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.exceptions.BadUserException;
 import it.polimi.tiw.utils.ConnectionHandler;
@@ -44,7 +45,7 @@ public class CreateUser extends HttpServlet{
 	}
 	
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		//check regex
 		Pattern pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+.[a-zA-Z]{2,4}$");
 		Matcher matcher;
@@ -109,9 +110,16 @@ public class CreateUser extends HttpServlet{
 			return;
 		}
 		//utente in sessione e vado in checkLogin
-		request.getSession().setAttribute("user", uDAO);
-		String path = getServletContext().getContextPath()+"/CheckLogin";
-		response.sendRedirect(path);
+		try {
+			User usr = uDAO.getUserByNickname(nickname);
+			request.getSession(true).setAttribute("user", usr);
+			String path = getServletContext().getContextPath()+"/CheckLogin";
+			response.sendRedirect(path);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+			return;
+		}
+		
 	}
 	
 }
