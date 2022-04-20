@@ -1,4 +1,4 @@
-package it.polimi.it.filters;
+package it.polimi.tiw.filters;
 
 import java.io.IOException;
 
@@ -13,12 +13,10 @@ import javax.servlet.http.HttpSession;
 
 public class Checker implements Filter{
 	
-	
-
-	@Override
+@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		// TODO Auto-generated method stub
+		
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/index.html";

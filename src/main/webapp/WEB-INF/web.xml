@@ -3,7 +3,7 @@
   <display-name>TIW-Moretti-Mormile-PureHTML</display-name>
   <context-param>
     <param-name>dbUrl</param-name>
-    <param-value>jdbc:mysql://localhost:3306/db_gallery?serverTimezone=UTC</param-value>
+    <param-value>jdbc:mysql://localhost:3306/galleryimage?serverTimezone=UTC</param-value>
   </context-param>
   <context-param>
     <param-name>dbUser</param-name>
@@ -11,11 +11,15 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>psw</param-value>
+    <param-value>Itala!10</param-value>
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
     <param-value>com.mysql.cj.jdbc.Driver</param-value>
+  </context-param>
+  <context-param>
+    <param-name>outputpath</param-name>
+    <param-value>\photos</param-value>
   </context-param> 
   <filter> 
       <filter-name>Checker</filter-name>

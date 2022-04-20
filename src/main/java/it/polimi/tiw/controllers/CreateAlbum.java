@@ -1,5 +1,4 @@
 package it.polimi.tiw.controllers;
-// TODO after the home page
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,17 +10,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
-import it.polimi.tiw.beans.Image;
+
 import it.polimi.tiw.beans.User;
-import it.polimi.tiw.dao.CommentDAO;
-import it.polimi.tiw.dao.ImageDAO;
-import it.polimi.tiw.exceptions.BadCommentException;
+import it.polimi.tiw.dao.AlbumDAO;
+import it.polimi.tiw.exceptions.BadAlbumException;
 import it.polimi.tiw.utils.ConnectionHandler;
 
-@WebServlet("/CreateComment")
-public class CreateComment extends HttpServlet{
+@WebServlet("/CreateAlbum")
+public class CreateAlbum extends HttpServlet{
 	
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
@@ -42,19 +41,16 @@ public class CreateComment extends HttpServlet{
 			throws ServletException, IOException{
 		
 		HttpSession session = request.getSession(false);
-		Integer imageId = null;
-		Integer usrID = null;
-		String text = null;
 		
-		User usr = (User) session.getAttribute("user");	
-		usrID = usr.getId();
-		int ciao;
+		Integer idUser = null;
+		String title = null;
+		
+		User usr = (User) session.getAttribute("user");
+		idUser = usr.getId();
 		
 		try {
-			imageId = Integer.parseInt(request.getParameter("image")); // avro anche album
-			text = StringEscapeUtils.escapeJava(request.getParameter("text"));
-			
-			if(text.equals("") || text==null) {
+			title = StringEscapeUtils.escapeJava(request.getParameter("title"));
+			if(title.equals("") || title==null) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Your comment cannot be empty");
 				return;
 			}
@@ -64,30 +60,21 @@ public class CreateComment extends HttpServlet{
 			return;
 		}
 		
-		CommentDAO cDao = new CommentDAO(connection);
-		Image img;
-		ImageDAO iDao = new ImageDAO(connection);
-		
+		AlbumDAO aDao = new AlbumDAO(connection);
+				
 		try {
-			img = iDao.getImageByID(imageId);
-			if(img == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
-				return;
-			}
-			cDao.createComment(imageId, text , usrID);
+			aDao.createAlbum(title,idUser);
 		}
 		catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create comment");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create album");
 			return;
-		} catch (BadCommentException e) {
+		} catch (BadAlbumException e) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
 			return;
 		}
-		// TODO fix the get album Id (un immagine puo avere piu album!! -> associare commento a id della tabella albumimages -> da li ho poi )
-		//response.sendRedirect(getServletContext().getContextPath() + "/Album?album=" + img.getAlbumId() + "&image=" + imageId);
-			
 		
+		response.sendRedirect(getServletContext().getContextPath() + "/GoToHome");
+			
 	}
 
 }
-	

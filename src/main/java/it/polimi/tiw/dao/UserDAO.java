@@ -15,7 +15,7 @@ public class UserDAO {
 		this.connection = connection;
 	}
 	
-	public User checkLogin(String nickname, String password, String email) throws SQLException{
+	public User checkLogin(String nickname, String email, String password) throws SQLException{
 		String query = "SELECT * FROM user where (nickname = ? OR email = ?)  AND password = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setString(1,nickname);
@@ -27,7 +27,7 @@ public class UserDAO {
 				else {
 					result.next();
 					User user = new User();
-					user.setId(result.getInt("userID"));
+					user.setId(result.getInt("id"));
 					user.setUsername(result.getString("nickname"));
 					return user;
 				}
@@ -46,7 +46,7 @@ public class UserDAO {
 				else {
 					result.next();
 					User user = new User();
-					user.setId(result.getInt("userID"));
+					user.setId(result.getInt("id"));
 					user.setUsername(result.getString("nickname"));
 					return user;
 				}
@@ -61,8 +61,8 @@ public class UserDAO {
 			pstatement.setString(1,mail);
 			try(ResultSet result = pstatement.executeQuery();){
 				if(!result.isBeforeFirst())
-					return false;
-				return true;
+					return true;
+				return false;
 			}
 		}
 	}
@@ -72,28 +72,24 @@ public class UserDAO {
 			pstatement.setString(1,nick);
 			try(ResultSet result = pstatement.executeQuery();){
 				if(!result.isBeforeFirst())
-					return false;
-				return true;
+					return true;
+				return false;
+				
 			}
 		}
 	}
 	
-	public void registerUser(String nickname, String email, String password, String repeatPassword) throws SQLException, BadUserException {
+	public void registerUser(String nickname, String email, String password) throws SQLException, BadUserException {
 		if(nickname == null || nickname.equals(""))
 			throw new BadUserException("Not valid nickname");
 		if(email == null || email.equals(""))
 			throw new BadUserException("Not valid email");
 		if(password == null || password.equals(""))
 			throw new BadUserException("Not valid password");
-		if(!password.equals(repeatPassword))
-			throw new BadUserException("Passwords don't match");
-		if(!isMailAvailable(email))
-			throw new BadUserException("Cannot use this mail");
-		if(!isNicknameAvailable(nickname))
-			throw new BadUserException("Cannot use this nickname");
+		
 			
 		
-		String query = "INSERT into user (username, email, password) VALUES(?, ?, ?)";
+		String query = "INSERT into user (nickname, email, password) VALUES(?, ?, ?)";
 		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
 			pstatement.setString(1, nickname);
 			pstatement.setString(2, email);

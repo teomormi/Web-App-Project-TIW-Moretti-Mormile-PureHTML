@@ -1,10 +1,13 @@
 package it.polimi.tiw.beans;
 
+import java.util.Date;
+
 public class Comment {
 	private int id;
 	private String text;
 	private int userId;
 	private int imageId;
+	private Date date;
 	
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
@@ -17,4 +20,7 @@ public class Comment {
 	
 	public int getImageId() { return imageId; }
 	public void setImageId(int image) { this.imageId = image; }
+	
+	public Date getDate() { return date; }
+	public void setDate(Date date) { this.date = date; }
 }

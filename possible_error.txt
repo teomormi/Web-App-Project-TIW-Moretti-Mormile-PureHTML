@@ -1,0 +1,15 @@
+PURE
+autocommuit a false nella creazione dell'album e nell'aggiornare le immagini
+un immagine ha piu album, da qui non posso utilizzare il get album su image in create comment
+tutti gli id negli insert sono controllati lato controller
+
+RIA
+manipolazione indici immagini nel salvataggio ordine
+user lista personalizzabile in pure
+
+TODO
+home.html
+createcomment
+getimagesbyalbum
+
+album.html

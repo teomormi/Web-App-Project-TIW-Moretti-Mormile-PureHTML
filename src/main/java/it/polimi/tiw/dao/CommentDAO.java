@@ -24,8 +24,9 @@ public class CommentDAO {
 			try(ResultSet result = pstatement.executeQuery()){
 				while(result.next()) {
 					Comment comment = new Comment();
-					comment.setId(result.getInt("commentID"));
+					comment.setId(result.getInt("id"));
 					comment.setText(result.getString("text"));
+					comment.setDate(result.getDate("date"));
 					comment.setImageId(result.getInt("image"));
 					comment.setUserId(result.getInt("user"));
 					comments.add(comment);
@@ -38,7 +39,7 @@ public class CommentDAO {
 	public void createComment(int idImg, String comment, int idUser) throws BadCommentException, SQLException {
 		if(comment==null || comment.equals(""))
 			throw new BadCommentException("Comment isn't valid");
-		String query = "INSERT into comment (user, text, image) VALUES(?, ?, ?)";
+		String query = "INSERT into comment (user, text, image) VALUES (?, ?, ?)";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setInt(1, idUser);
 			pstatement.setString(2, comment);
@@ -47,9 +48,7 @@ public class CommentDAO {
 		} catch (SQLException e) {
 			connection.rollback();
 			throw e;
-		}
-		
-		
+		}	
 	}
 
 }

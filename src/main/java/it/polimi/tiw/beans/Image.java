@@ -8,7 +8,7 @@ public class Image {
 	private String description;
 	private Date date;
 	private String path;
-	private int albumId;
+	private int userId;
 	
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
@@ -25,6 +25,6 @@ public class Image {
 	public String getPath() { return path; }
 	public void setPath(String src) { this.path = src; }
 	
-	public int getAlbumId() { return albumId; }
-	public void setAlbumId(int album) { this.albumId = album; }		
+	public int getUserId() { return userId; }
+	public void setUserId(int album) { this.userId = album; }		
 }

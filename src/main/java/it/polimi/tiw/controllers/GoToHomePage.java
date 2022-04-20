@@ -7,11 +7,11 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -19,6 +19,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.beans.Album;
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AlbumDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 
@@ -49,19 +50,30 @@ public class GoToHomePage extends HttpServlet{
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 	
-		AlbumDAO aDAO = new AlbumDAO(connection);
+		HttpSession session = request.getSession(false);
+		Integer idUser = null;
+		
+		
+		AlbumDAO aDao = new AlbumDAO(connection);
 		ArrayList<Album> albums = null;
+		ArrayList<Album> albumsUser = null;
+		
+		User usr = (User) session.getAttribute("user");
+		idUser = usr.getId();
 		
 		try {
-			albums = aDAO.getAlbums();
+			albums = aDao.getAlbums();
+			albumsUser = aDao.getAlbumsByUserID(idUser);
 		}
 		catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover albums");
 			return;
 		}
+		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("albums", albums);
+		ctx.setVariable("albumsUser", albumsUser);
 		String path = "/WEB-INF/home.html";
 		templateEngine.process(path, ctx, response.getWriter());
 	}

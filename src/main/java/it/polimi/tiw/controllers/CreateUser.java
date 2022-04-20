@@ -46,15 +46,16 @@ public class CreateUser extends HttpServlet{
 	
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
-		//check regex
+		
 		Pattern pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+.[a-zA-Z]{2,4}$");
 		Matcher matcher;
 		String nickname = null;
 		String email = null;
 		String password = null;
 		String passConfirm = null;
+		
 		try {
-			nickname = StringEscapeUtils.escapeJava(request.getParameter("nickname"));
+			nickname = StringEscapeUtils.escapeJava(request.getParameter("username"));
 			email = StringEscapeUtils.escapeJava(request.getParameter("email"));
 			password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 			passConfirm = StringEscapeUtils.escapeJava(request.getParameter("passconfirm"));
@@ -69,6 +70,14 @@ public class CreateUser extends HttpServlet{
 				response.getWriter().println("Email cannot be empty");
 				return;
 			}
+			
+			matcher = pattern.matcher(email);
+			if(!matcher.matches()) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println("Bad email format");
+				return;				
+			}
+			
 			if(!isStringValid(password)) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				response.getWriter().println("Password cannot be empty");
@@ -79,6 +88,7 @@ public class CreateUser extends HttpServlet{
 				response.getWriter().println("Passwords don't match");
 				return;
 			}
+			
 		}
 		catch (NumberFormatException | NullPointerException e) {
 		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -98,7 +108,8 @@ public class CreateUser extends HttpServlet{
 				response.getWriter().println("email isn't available");
 				return;
 			}
-			uDAO.registerUser(nickname, email, password, passConfirm);
+			
+			uDAO.registerUser(nickname, email, password);
 			
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -109,11 +120,12 @@ public class CreateUser extends HttpServlet{
 			response.getWriter().println("Incorrect param values");
 			return;
 		}
+		
 		//utente in sessione e vado in checkLogin
 		try {
 			User usr = uDAO.getUserByNickname(nickname);
 			request.getSession(true).setAttribute("user", usr);
-			String path = getServletContext().getContextPath()+"/CheckLogin";
+			String path = getServletContext().getContextPath()+"/GoToHome";
 			response.sendRedirect(path);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");

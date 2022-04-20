@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <title>Moretti Mormile</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/home_style.css" th:href="@{/css/home_style.css}" />
+</head>
+<body>
+  <!-- header menu -->
+  <div class="header block">
+    <header>
+      <div id="title">
+        <h1>Galleria   immagini</h1>
+      </div>
+      <nav>
+        <ul>
+          	<li class="logout"><a th:href="@{/Logout}">Logout</a></li>
+          </ul>
+        </nav>
+      </header>
+    <!-- / header menu -->
+    </div>
+
+    <!-- Wallpaper -->
+    <div class="wallpaper" style="background-image: url('GetImage/lago-de-como.jpg');">
+    <p th:text="${'Nice to see you again ' + session.user.username }"></p>
+    </div>
+
+
+    <!-- content -->
+    <div class="block">      
+       <div id="album_container">
+        <section id="album_title">
+          <h1>Scegli l'album da visualizzare o creane uno nuovo </h1>
+        </section>	
+        
+        <div th:if="${albums.size() == 0}">
+			<h2>Nessun album da visualizzare</h2>
+        </div>
+	
+		<div th:if="${albums.size() > 0}">
+			<div th:remove="all-but-first" id="albums_list">
+				<article th:each="a : ${albums}">
+					<p th:text="${a.date}">2020-05-17</p>
+					<h2 th:text="${a.title}">Lorum ipsum dolor</h2>
+            		<a href="#" th:href="@{/Album(album = ${a.id})}"><button>Mostra</button></a>
+				</article>
+				<article>
+            		<h2>Lorum ipsum dolor 1</h2>
+            		<a href="album_images.html"><button>Mostra</button></a>
+	          	</article>
+	          	<article>
+	            	<h2>Lorum ipsum dolor 2</h2>
+	            	<a href="album_images.html"><button>Mostra</button></a>
+	          	</article>
+	          	<article>
+	            	<h2>Lorum ipsum dolor 3</h2>
+	            	<a href="album_images.html"><button>Mostra</button></a>
+	          	</article>
+        	</div> 
+       </div>
+			
+        <!-- right column -->
+        <aside id="right_column">
+        
+          <div th:if="${albumsUser.size() == 0}" class="upload_image">
+				<p>PER CARICARE IMMAGINE CREA PRIMA UN TUO ALBUM</p>
+          </div>
+          
+          <div th:if="${albumsUser.size() > 0}" class="upload_image">
+	          <h2>CARICA IMMAGINE</h2>
+	          <form action="#" th:action="@{/CreateImage}" method="POST" enctype="multipart/form-data">
+	          	<div class="detail_image">
+		          	<label for="title">Title</label>
+		            <input type="text" name="title" />
+		            <label for="description">Description</label>
+		            <input type="text" name="description" />
+		            <label for="file">File</label>
+		            <input type="file" name="file" />
+	            </div>
+	            <p>SCEGLI ALBUM DOVE SALVARE</p>
+	            <!-- albumsUser -->
+	            <div th:each="au : ${albumsUser}" class="input_checkbox">
+	            	<input type="checkbox" name="albums" th:value="${au.id}">
+	            	<label th:text="${au.title}"> Album 1</label>
+				</div>
+				<input type="submit" value="Salva immagine">
+	          </form>
+        	</div>
+        	
+        	
+        <div class="create_album">
+          <h2>CREA ALBUM</h2>
+          <form action="#" th:action="@{/CreateAlbum}" method="POST">
+          	<label for="title">Title</label>
+          	<input type="text" name="title">
+            <input type="submit" value="Crea Album">
+          </form>
+        </div>
+        </aside>
+        
+        
+      </div>
+    <!-- / content body -->
+    </div>
+
+
+
+    <!-- footer -->
+    <div class="footer block">
+      <footer id="footer">
+        <p>Copyright &copy; 2022 - All Rights Reserved - Moretti Lorenzo / Mormile Matteo</p>
+      </footer>
+    </div>
+  </body>
+</html>
