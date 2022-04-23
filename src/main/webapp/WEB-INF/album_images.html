@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <title>Moretti Mormile</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" media="all"
+	href="../css/album_style.css" th:href="@{/css/album_style.css}" />
+</head>
+<body>
+  <!-- header menu -->
+  <div class="header_container block">
+    <header>
+      <div id="title">
+        <h1>Galleria immagini</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a  th:href="@{/GoToHome}">Albums</a><li>
+          <li class="logout"><a th:href="@{/Logout}">Logout</a></li>
+          </ul>
+        </nav>
+      </header>
+    <!-- / header menu -->
+    </div>
+
+    <!-- Wallpaper -->
+    <div class="wallpaper" style="background-image: url('GetImage/lago-de-como.jpg');">
+    <!--  <a>Benvenuto Matteo</a>-->
+    </div>
+
+
+    <!-- content -->
+    <div id="album_container" class="block" >
+        <section id="album_name">
+          <h1 th:text="${album.title}">Nome Album</h1>
+        </section>
+        <section th:if="${images != null && images.size() > 0}">
+          <main class="album_images" th:remove="all-but-first">
+            <a href="#" th:each="i : ${images}" th:href="@{/Album(album=${album.id}, image=${i.id})}">
+            	<div class="image_container"> 
+              		<img th:src="@{'GetImage/' + ${i.path}}" th:alt="${i.title}"/>
+              		<h2 th:text="${i.title}" class="image_title">Mountain View</h2> 
+              	</div>
+            </a>
+            <a>
+            <div class="album_image">
+                <h2 class="image_title">To The Beach</h2> 
+            </div>
+            </a>
+            <a>
+            <div class="album_image">
+              <h2 class="image_title">Desert Destinations</h2>
+            </div>
+            </a>
+          </main>
+        </section>
+
+        <div class="button_move">
+          <a class="left" href="#" th:if="${prev != null}" th:href="@{/Album(album=${album.id}, image=${prev.id})}"><button>«</button></a>
+          <a class="right" href="#" th:if="${next!=null}" th:href="@{/Album(album=${album.id}, image=${next.id})}"><button>»</button></a>
+        </div>
+        
+        
+        <div th:if="${active != null}" class="image_details">
+          <!-- here the full scale image -->
+          <img class="fullscale_image" src="login.jpg" th:src="@{'/GetImage/' + ${active.path}}"></img>
+          <div class="image_description">
+          	<p th:text="${active.date}">2022/01/01 19:05:58</p>
+          	<h2 class="image_description" th:text="${active.title}">Lago di Como</h2>
+          	<h3 th:text="${active.description}">Descrizione dell'immagine</h3>
+          </div>
+          <!-- container comments -->
+          
+          <div th:if="${comments!=null && comments.size()>0}" id="comment_container">
+			<h2>Commenti</h2>
+			<article th:each="c : ${comments}">
+              <h2 th:text="${c.user}">Matteo</h2>
+              <p th:text="${c.text}">Immagine fantastica!</p>
+            </article>
+          </div>
+	
+		  <div th:if="${comments==null || comments.size()==0}">
+			<h2>Nessun commento da visualizzare</h2>
+		 </div>
+			
+         <!-- right column -->
+          <aside id="right_column">
+            <div id="new_comment">
+            <h2>Crea nuovo commento</h2>
+            <form method="post" th:action="@{/CreateComment}">
+              <textarea name="text" rows="4" cols="30"></textarea>
+              <input type="hidden" name="image" th:value="${active.id}"/>
+              <input type="hidden" name="album" th:value="${album.id}">
+              <input type="submit" value="Invia">
+            </form>
+            </div>
+          </aside>
+
+        </div>
+        <!-- / content body -->
+    </div>
+
+
+    <!-- footer -->
+    <div class="footer block">
+      <footer id="footer">
+        <p>Copyright &copy; 2022 - All Rights Reserved - Moretti Lorenzo / Mormile Matteo</p>
+      </footer>
+    </div>
+  </body>
+</html>

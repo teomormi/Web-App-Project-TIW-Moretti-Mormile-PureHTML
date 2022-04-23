@@ -17,7 +17,7 @@ public class CommentDAO {
 	}
 	
 	public ArrayList<Comment> getCommentsFromImages(int idImg) throws SQLException{
-		String query = "SELECT * FROM comment where image = ?";
+		String query = "SELECT c.id,text,date,image,username FROM comment as c,user as u where c.user=u.id and image = ?";
 		ArrayList<Comment> comments = new ArrayList<Comment>();
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setInt(1, idImg);
@@ -28,7 +28,7 @@ public class CommentDAO {
 					comment.setText(result.getString("text"));
 					comment.setDate(result.getDate("date"));
 					comment.setImageId(result.getInt("image"));
-					comment.setUserId(result.getInt("user"));
+					comment.setUser(result.getString("username"));
 					comments.add(comment);
 				}
 			}

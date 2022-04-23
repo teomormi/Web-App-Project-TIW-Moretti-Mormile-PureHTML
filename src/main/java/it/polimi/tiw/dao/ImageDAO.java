@@ -29,6 +29,7 @@ public class ImageDAO {
 					img.setTitle(result.getString("title"));
 					img.setDate(result.getDate("date"));
 					img.setUserId(result.getInt("user"));
+					images.add(img);
 				}
 			}
 		}

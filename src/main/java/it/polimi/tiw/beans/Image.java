@@ -8,7 +8,7 @@ public class Image {
 	private String description;
 	private Date date;
 	private String path;
-	private int userId;
+	private int userId; 
 	
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }

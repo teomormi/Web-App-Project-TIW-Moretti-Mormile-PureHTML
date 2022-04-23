@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.AlbumImagesDAO;
 import it.polimi.tiw.dao.CommentDAO;
 import it.polimi.tiw.dao.ImageDAO;
 import it.polimi.tiw.exceptions.BadCommentException;
@@ -43,15 +44,16 @@ public class CreateComment extends HttpServlet{
 		
 		HttpSession session = request.getSession(false);
 		Integer imageId = null;
+		Integer albumId = null;
 		Integer usrID = null;
 		String text = null;
 		
 		User usr = (User) session.getAttribute("user");	
 		usrID = usr.getId();
-		int ciao;
 		
 		try {
-			imageId = Integer.parseInt(request.getParameter("image")); // avro anche album
+			imageId = Integer.parseInt(request.getParameter("image")); 
+			albumId = Integer.parseInt(request.getParameter("album"));
 			text = StringEscapeUtils.escapeJava(request.getParameter("text"));
 			
 			if(text.equals("") || text==null) {
@@ -63,15 +65,20 @@ public class CreateComment extends HttpServlet{
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect or missing param values");
 			return;
 		}
-		
-		CommentDAO cDao = new CommentDAO(connection);
-		Image img;
+			
 		ImageDAO iDao = new ImageDAO(connection);
+		Image img;
+		AlbumImagesDAO IaDao = new AlbumImagesDAO(connection);
+		CommentDAO cDao = new CommentDAO(connection);
 		
 		try {
 			img = iDao.getImageByID(imageId);
 			if(img == null) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+				return;
+			}
+			if(!IaDao.checkImageInAlbum(imageId, albumId)) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Mismatching value from album and image, cannot return to album page");
 				return;
 			}
 			cDao.createComment(imageId, text , usrID);
@@ -83,9 +90,9 @@ public class CreateComment extends HttpServlet{
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
 			return;
 		}
-		// TODO fix the get album Id (un immagine puo avere piu album!! -> associare commento a id della tabella albumimages -> da li ho poi )
-		//response.sendRedirect(getServletContext().getContextPath() + "/Album?album=" + img.getAlbumId() + "&image=" + imageId);
-			
+		// OPPURE associare commento a id della tabella albumimages -> da li ho poi imageid e albumid
+		
+		response.sendRedirect(getServletContext().getContextPath() + "/Album?album=" + albumId + "&image=" + imageId);
 		
 	}
 

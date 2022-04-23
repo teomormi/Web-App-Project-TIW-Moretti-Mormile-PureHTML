@@ -15,10 +15,10 @@ public class UserDAO {
 		this.connection = connection;
 	}
 	
-	public User checkLogin(String nickname, String email, String password) throws SQLException{
-		String query = "SELECT * FROM user where (nickname = ? OR email = ?)  AND password = ?";
+	public User checkLogin(String username, String email, String password) throws SQLException{
+		String query = "SELECT * FROM user where (username = ? OR email = ?)  AND password = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
-			pstatement.setString(1,nickname);
+			pstatement.setString(1,username);
 			pstatement.setString(2, email);
 			pstatement.setString(3,password);
 			try(ResultSet result = pstatement.executeQuery();){
@@ -28,7 +28,7 @@ public class UserDAO {
 					result.next();
 					User user = new User();
 					user.setId(result.getInt("id"));
-					user.setUsername(result.getString("nickname"));
+					user.setUsername(result.getString("username"));
 					return user;
 				}
 			}
@@ -36,10 +36,10 @@ public class UserDAO {
 		
 	}
 	
-	public User getUserByNickname(String nickname) throws SQLException {
-		String query = "SELECT * FROM user where nickname = ?";
+	public User getUserByUsername(String username) throws SQLException {
+		String query = "SELECT * FROM user where username = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
-			pstatement.setString(1,nickname);
+			pstatement.setString(1,username);
 			try(ResultSet result = pstatement.executeQuery();){
 				if(!result.isBeforeFirst()) //user not present in DB
 					return null;
@@ -47,7 +47,7 @@ public class UserDAO {
 					result.next();
 					User user = new User();
 					user.setId(result.getInt("id"));
-					user.setUsername(result.getString("nickname"));
+					user.setUsername(result.getString("username"));
 					return user;
 				}
 			}
@@ -66,10 +66,10 @@ public class UserDAO {
 			}
 		}
 	}
-	public boolean isNicknameAvailable(String nick) throws SQLException {
-		String query = "SELECT * FROM user where nickname = ?";
+	public boolean isUsernameAvailable(String username) throws SQLException {
+		String query = "SELECT * FROM user where username = ?";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
-			pstatement.setString(1,nick);
+			pstatement.setString(1,username);
 			try(ResultSet result = pstatement.executeQuery();){
 				if(!result.isBeforeFirst())
 					return true;
@@ -79,9 +79,9 @@ public class UserDAO {
 		}
 	}
 	
-	public void registerUser(String nickname, String email, String password) throws SQLException, BadUserException {
-		if(nickname == null || nickname.equals(""))
-			throw new BadUserException("Not valid nickname");
+	public void registerUser(String username, String email, String password) throws SQLException, BadUserException {
+		if(username == null || username.equals(""))
+			throw new BadUserException("Not valid username");
 		if(email == null || email.equals(""))
 			throw new BadUserException("Not valid email");
 		if(password == null || password.equals(""))
@@ -89,9 +89,9 @@ public class UserDAO {
 		
 			
 		
-		String query = "INSERT into user (nickname, email, password) VALUES(?, ?, ?)";
+		String query = "INSERT into user (username, email, password) VALUES(?, ?, ?)";
 		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
-			pstatement.setString(1, nickname);
+			pstatement.setString(1, username);
 			pstatement.setString(2, email);
 			pstatement.setString(3, password);
 			pstatement.executeUpdate();

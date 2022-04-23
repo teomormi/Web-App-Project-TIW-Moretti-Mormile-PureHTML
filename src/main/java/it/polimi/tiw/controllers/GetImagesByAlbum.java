@@ -4,7 +4,7 @@ package it.polimi.tiw.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,7 +32,6 @@ public class GetImagesByAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;
-	private int pageSize = 5;
 	
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
@@ -53,7 +52,7 @@ public class GetImagesByAlbum extends HttpServlet {
 		}
 	}
 	
-	Image getActiveImage(int id, ArrayList<Image> arrayImgs) {
+	Image getActiveImage(int id,List<Image> arrayImgs) {
 		for(Image i : arrayImgs)
 			if(i.getId() == id)
 				return i;
@@ -80,36 +79,38 @@ public class GetImagesByAlbum extends HttpServlet {
 		}
 		
 		AlbumDAO aDAO = new AlbumDAO(connection);
-		ImageDAO iDAO = new ImageDAO(connection);
 		
 		Album album = null;
-		ArrayList<Image> images = null;
-		
+		List<Image> listImages = null;
+		System.out.println(IdAlbum);
 		try {
 			album = aDAO.getAlbumByID(IdAlbum);
-			images = iDao.getImagesFromAlbum(IdAlbum);
+			listImages = iDao.getImagesFromAlbum(IdAlbum);
 		} 
 		catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover album");
 			return;
 		}
 		
-		ArrayList<Image> pageImages = null;
+		List<Image> pageImages = null;
 		Image prevImage = null;
 		Image nextImage = null;	
 		Image activeImage = null;
-		ArrayList<Comment> comments = null;
+		List<Comment> comments = null;
 		
-		if(images.size()>0) {
+		if(listImages.size()>0) {
 			
-			//Chose the active image
-			
-			if(IdImg!=null)
-				activeImage = getActiveImage(IdImg, images);
+			if(IdImg!=null) // user chosen an image
+				activeImage = getActiveImage(IdImg, listImages);
 			else
-				activeImage = images.get(0);
+				activeImage = listImages.get(0);
 			
+			if(activeImage == null) {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover selected image");
+				return;
+			}
 			//Get comment of active image
+			
 			
 			CommentDAO cDAO = new CommentDAO(connection);
 			try {
@@ -119,20 +120,25 @@ public class GetImagesByAlbum extends HttpServlet {
 				return;
 			}
 			
-			int imageIndex = images.indexOf(activeImage);
+			int imageIndex = listImages.indexOf(activeImage);
+			
 			int minCurrentIndex = (int)Math.floorDiv(imageIndex, pageSize) * pageSize; //indice prima immagine a sinistra nel menu della scelta. floorDiv return intero approssimato per difetto del risultato tra la divisione dei due terimini
-			int maxCurrentIndex = (int)Math.min(images.size(),minCurrentIndex + pageSize);
-			pageImages = (ArrayList<Image>) images.subList(minCurrentIndex, maxCurrentIndex);
+			int maxCurrentIndex = (int)Math.min(listImages.size(),minCurrentIndex + pageSize);
+			System.out.println(minCurrentIndex);
+			System.out.println(maxCurrentIndex);
+			pageImages = listImages.subList(minCurrentIndex, maxCurrentIndex);
 			
 			//Per i click di next e prev
 			if(minCurrentIndex>0)
-				prevImage = images.get(imageIndex-pageSize);
-			if(maxCurrentIndex>images.size())
-				nextImage = images.get(Math.min(images.size()-1,imageIndex+pageSize));
-			
+				prevImage = listImages.get(minCurrentIndex - 1);
+			if(maxCurrentIndex < listImages.size())
+				nextImage = listImages.get(maxCurrentIndex);
+
+		}else {
+			System.out.println("Lista vuota!");
 		}
 		
-		String path = "/WEB-INF/album.html";
+		String path = "/WEB-INF/album_images.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("album", album);

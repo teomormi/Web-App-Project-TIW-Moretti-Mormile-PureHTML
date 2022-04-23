@@ -49,20 +49,20 @@ public class CreateUser extends HttpServlet{
 		
 		Pattern pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+.[a-zA-Z]{2,4}$");
 		Matcher matcher;
-		String nickname = null;
+		String username = null;
 		String email = null;
 		String password = null;
 		String passConfirm = null;
 		
 		try {
-			nickname = StringEscapeUtils.escapeJava(request.getParameter("username"));
+			username = StringEscapeUtils.escapeJava(request.getParameter("username"));
 			email = StringEscapeUtils.escapeJava(request.getParameter("email"));
 			password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 			passConfirm = StringEscapeUtils.escapeJava(request.getParameter("passconfirm"));
 			
-			if(!isStringValid(nickname)) {
+			if(!isStringValid(username)) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Nickname cannot be empty");
+				response.getWriter().println("Username cannot be empty");
 				return;
 			}
 			if(!isStringValid(email)) {
@@ -103,13 +103,13 @@ public class CreateUser extends HttpServlet{
 				response.getWriter().println("email isn't available");
 				return;
 			}
-			if(!uDAO.isNicknameAvailable(nickname)) {
+			if(!uDAO.isUsernameAvailable(username)) {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				response.getWriter().println("email isn't available");
 				return;
 			}
 			
-			uDAO.registerUser(nickname, email, password);
+			uDAO.registerUser(username, email, password);
 			
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -123,7 +123,7 @@ public class CreateUser extends HttpServlet{
 		
 		//utente in sessione e vado in checkLogin
 		try {
-			User usr = uDAO.getUserByNickname(nickname);
+			User usr = uDAO.getUserByUsername(username);
 			request.getSession(true).setAttribute("user", usr);
 			String path = getServletContext().getContextPath()+"/GoToHome";
 			response.sendRedirect(path);
