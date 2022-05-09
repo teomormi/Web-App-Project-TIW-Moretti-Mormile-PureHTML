@@ -55,14 +55,14 @@ public class GoToHomePage extends HttpServlet{
 		
 		
 		AlbumDAO aDao = new AlbumDAO(connection);
-		ArrayList<Album> albums = null;
+		ArrayList<Album> albumsOther = null;
 		ArrayList<Album> albumsUser = null;
 		
 		User usr = (User) session.getAttribute("user");
 		idUser = usr.getId();
 		
 		try {
-			albums = aDao.getAlbums();
+			albumsOther = aDao.getAlbumsByNotUserID(idUser);
 			albumsUser = aDao.getAlbumsByUserID(idUser);
 		}
 		catch (SQLException e) {
@@ -72,7 +72,7 @@ public class GoToHomePage extends HttpServlet{
 		
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("albums", albums);
+		ctx.setVariable("albumsOther", albumsOther);
 		ctx.setVariable("albumsUser", albumsUser);
 		String path = "/WEB-INF/home.html";
 		templateEngine.process(path, ctx, response.getWriter());

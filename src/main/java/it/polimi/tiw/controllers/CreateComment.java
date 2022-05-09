@@ -1,5 +1,4 @@
 package it.polimi.tiw.controllers;
-// TODO after the home page
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -74,11 +73,11 @@ public class CreateComment extends HttpServlet{
 		try {
 			img = iDao.getImageByID(imageId);
 			if(img == null) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values");
 				return;
 			}
 			if(!IaDao.checkImageInAlbum(imageId, albumId)) {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Mismatching value from album and image, cannot return to album page");
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Mismatching value from album and image, cannot return to album page");
 				return;
 			}
 			cDao.createComment(imageId, text , usrID);

@@ -93,6 +93,6 @@ header nav li a:hover{color:#FF9900;}
 
 /*----------------------------------------------Footer-------------------------------------*/
 
-.footer{border-top:1px solid #DEDEDE;width:100%;background-color: #89bae0;height: 60px;}
+div.footer{border-top:1px solid #DEDEDE;width:100%;background-color: #89bae0;height: 60px;}
 
-#footer p{margin-bottom: 15px; padding:0;text-align:center;color: #ffffff;margin-top: 15px;font-size:18px;text-transform:uppercase;}
+footer p{margin-bottom: 15px; padding:0;text-align:center;color: #ffffff;margin-top: 15px;font-size:18px;text-transform:uppercase;}

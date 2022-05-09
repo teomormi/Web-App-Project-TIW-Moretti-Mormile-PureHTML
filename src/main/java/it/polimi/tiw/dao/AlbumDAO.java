@@ -16,24 +16,6 @@ public class AlbumDAO {
 		this.connection=connection;
 	}
 	
-	public ArrayList<Album> getAlbums() throws SQLException{
-		ArrayList<Album> albums = new ArrayList<Album>();
-		String query = "SELECT * FROM album ORDER BY date DESC";
-		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
-			try(ResultSet result = pstatement.executeQuery()) {
-				while(result.next()) {
-					Album album = new Album();
-					album.setId(result.getInt("id"));
-					album.setTitle(result.getString("title"));
-					album.setDate(result.getDate("date"));
-					album.setUserId(result.getInt("user"));
-					albums.add(album);
-				}
-			}
-		}
-		return albums;
-	}
-	
 	public Album getAlbumByID(int id) throws SQLException{
 		String query = "SELECT * FROM album WHERE id = ? ORDER BY date DESC";
 		Album album = new Album();
@@ -54,6 +36,25 @@ public class AlbumDAO {
 	
 	public ArrayList<Album> getAlbumsByUserID(int id) throws SQLException{
 		String query = "SELECT * FROM album WHERE user = ? ORDER BY date DESC";
+		ArrayList<Album> albums = new ArrayList<Album>(); 
+		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
+			pstatement.setInt(1, id);
+			try(ResultSet result = pstatement.executeQuery()) {
+				while(result.next()) {
+					Album album = new Album();
+					album.setId(result.getInt("id"));
+					album.setTitle(result.getString("title"));
+					album.setDate(result.getDate("date"));
+					album.setUserId(result.getInt("user"));
+					albums.add(album);
+				}
+			}
+		}
+		return albums;
+	}
+	
+	public ArrayList<Album> getAlbumsByNotUserID(int id) throws SQLException{
+		String query = "SELECT * FROM album WHERE user != ? ORDER BY date DESC";
 		ArrayList<Album> albums = new ArrayList<Album>(); 
 		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
 			pstatement.setInt(1, id);

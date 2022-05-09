@@ -22,7 +22,6 @@ import javax.servlet.http.Part;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import it.polimi.tiw.beans.User;
-import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.dao.AlbumImagesDAO;
 import it.polimi.tiw.dao.AlbumDAO;
 import it.polimi.tiw.dao.ImageDAO;
@@ -135,7 +134,7 @@ public class CreateImage extends HttpServlet {
 		File file = new File(outputPath);
 		ImageDAO iDao = new ImageDAO(connection);
 		AlbumImagesDAO aiDao = new AlbumImagesDAO(connection);
-		Image img = null;
+		Integer newImgId = null;
 
 		try{
 			// check if file with same path already exist
@@ -149,12 +148,10 @@ public class CreateImage extends HttpServlet {
 			
 			// create image and referenced to album
 			connection.setAutoCommit(false);
-			iDao.createImage(fileName, description, title, idUser.intValue());
-			
-			img = iDao.getImageByPath(fileName);
+			newImgId = iDao.createImage(fileName, description, title, idUser.intValue());
 			
 			for(Integer id : listIds) {
-				aiDao.addImageToAlbum(img.getId(), id);
+				aiDao.addImageToAlbum(newImgId, id);
 			}
 			connection.commit();
 			

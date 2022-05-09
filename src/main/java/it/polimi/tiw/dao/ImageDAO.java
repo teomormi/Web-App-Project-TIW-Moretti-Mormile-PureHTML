@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import it.polimi.tiw.beans.Image;
@@ -79,7 +80,7 @@ public class ImageDAO {
 	}
 	
 	
-	public void createImage(String path, String description,String title,int idUser) throws BadImageException, SQLException {
+	public int createImage(String path, String description,String title,int idUser) throws SQLException, BadImageException {
 		if(path==null || path.equals(""))
 			throw new BadImageException("Path isn't valid");
 		if(description==null || description.equals(""))
@@ -89,12 +90,18 @@ public class ImageDAO {
 		
 		String query = "INSERT into image (path, description, title, user) VALUES (?, ?, ?, ?)";
 		
-		try(PreparedStatement pstatement = connection.prepareStatement(query);){
+		try (PreparedStatement pstatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
 			pstatement.setString(1, path);
 			pstatement.setString(2, description);
 			pstatement.setString(3, title);
 			pstatement.setInt(4, idUser);
-			pstatement.executeUpdate();		
+			pstatement.executeUpdate();
+			ResultSet generatedKeys = pstatement.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				return generatedKeys.getInt(1);
+			} else {
+				throw new SQLException("Creating image failed, no ID obtained.");
+			}
 		}
 	}
 	

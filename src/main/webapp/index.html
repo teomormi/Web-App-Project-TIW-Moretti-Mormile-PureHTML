@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/index_style.css">
 </head>
 <body>
-  <div class="container left">
+  <div id="container_login" class="container">
         <h3>Login</h3>
         <form action="CheckLogin" method="post">
         <label for="username">Username</label>
@@ -14,13 +14,16 @@
 
         <label for="password">Password</label>
         <input type="password" placeholder="Password" name="password" required>
-		<p th:text=" ${errorMsg_Login}"></p>
-        <input type="submit" value="Log In">
+		
+		<input type="submit" value="Log In">
         </form>
+        
+        <p th:text=" ${errorMsg_Login}"></p>
+        <div onclick="signup()" class="change_tab">New account? Create here </div>
         
   </div>
 
-  <div class="container right ">
+  <div id="container_signup" class="container">
           <h3>Sign Up</h3>
           <form action="CreateUser" method="post">
           <label for="username">Username</label>
@@ -37,6 +40,21 @@
 
           <input type="submit" value="Sign Up">
           </form>
+          
+          <div onclick="login()" class="change_tab">Have an account? Login here </div>
   </div>
+  
+  
+  <script type="text/javascript">
+	function login() {
+		document.getElementById("container_signup").style.display = "none";
+		document.getElementById("container_login").style.display = "block";
+	}
+
+	function signup(){
+		document.getElementById("container_login").style.display = "none";
+		document.getElementById("container_signup").style.display = "block";
+	}
+	</script>
 </body>
 </html>

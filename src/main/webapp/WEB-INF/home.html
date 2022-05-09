@@ -23,7 +23,7 @@
     </div>
 
     <!-- Wallpaper -->
-    <div class="wallpaper" style="background-image: url('GetImage/lago-de-como.jpg');">
+    <div class="wallpaper" style="background-image: url('images/lago-de-como.jpg');">
     <p th:text="${'Nice to see you again ' + session.user.username }"></p>
     </div>
 
@@ -35,17 +35,26 @@
           <h1>Scegli l'album da visualizzare o creane uno nuovo </h1>
         </section>	
         
-        <div th:if="${albums.size() == 0}">
+        <div th:if="${(albumsOther.size() == 0)&&(albumsUser.size()==0)}">
 			<h2>Nessun album da visualizzare</h2>
         </div>
 	
-		<div th:if="${albums.size() > 0}">
+		<div th:if="${(albumsUser.size() > 0)||(albumsOther.size() > 0)}">
 			<div th:remove="all-but-first" id="albums_list">
-				<article th:each="a : ${albums}">
-					<p th:text="${a.date}">2020-05-17</p>
-					<h2 th:text="${a.title}">Lorum ipsum dolor</h2>
-            		<a href="#" th:href="@{/Album(album = ${a.id})}"><button>Mostra</button></a>
-				</article>
+				<div>
+					<h2>YOUR ALBUM</h2>
+					<article th:each="a : ${albumsUser}">
+						<p th:text="${a.date}">2020-05-17</p>
+						<h2 th:text="${a.title}">Lorum ipsum dolor</h2>
+            			<a href="#" th:href="@{/Album(album = ${a.id})}"><button>Mostra</button></a>
+					</article>
+					<h2>OTHER ALBUMS</h2>
+					<article th:each="ao : ${albumsOther}">
+						<p th:text="${ao.date}">2020-05-17</p>
+						<h2 th:text="${ao.title}">Lorum ipsum dolor</h2>
+            			<a href="#" th:href="@{/Album(album = ${ao.id})}"><button>Mostra</button></a>
+					</article>
+				</div>
 				<article>
             		<h2>Lorum ipsum dolor 1</h2>
             		<a href="album_images.html"><button>Mostra</button></a>
@@ -109,7 +118,7 @@
 
     <!-- footer -->
     <div class="footer block">
-      <footer id="footer">
+      <footer>
         <p>Copyright &copy; 2022 - All Rights Reserved - Moretti Lorenzo / Mormile Matteo</p>
       </footer>
     </div>

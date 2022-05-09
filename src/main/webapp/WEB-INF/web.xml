@@ -22,15 +22,16 @@
     <param-value>\photos</param-value>
   </context-param> 
   <filter> 
-      <filter-name>Checker</filter-name>
-      <filter-class>it.polimi.tiw.filters.Checker</filter-class> 
+      <filter-name>LoggedChecker</filter-name>
+      <filter-class>it.polimi.tiw.filters.LoggedChecker</filter-class> 
  </filter> 
- <filter-mapping> 
-    <filter-name>Checker</filter-name> 
-    <url-pattern>/GoToHome</url-pattern>
-    <url-pattern>/CreateComment</url-pattern>
-    <url-pattern>/Album</url-pattern>  
- </filter-mapping> 
+ <filter-mapping>
+    <filter-name>LoggedChecker</filter-name> 
+    <url-pattern>/home.html</url-pattern> 
+    <url-pattern>/albums_images.html</url-pattern> 
+    <url-pattern>/GoToHome</url-pattern> 
+    <url-pattern>/Album</url-pattern>
+ </filter-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>

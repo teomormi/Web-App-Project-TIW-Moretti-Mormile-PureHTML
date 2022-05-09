@@ -1,5 +1,4 @@
 package it.polimi.tiw.controllers;
-// TODO after the home page
 
 import java.io.IOException;
 import java.sql.Connection;
