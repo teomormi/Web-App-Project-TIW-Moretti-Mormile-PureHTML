@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -14,10 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
-import it.polimi.tiw.exceptions.BadUserException;
 import it.polimi.tiw.utils.ConnectionHandler;
 
 @WebServlet("/CreateUser")
@@ -25,9 +29,20 @@ import it.polimi.tiw.utils.ConnectionHandler;
 public class CreateUser extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
+	private TemplateEngine templateEngine;
+
+	public CreateUser() {
+		super();
+	}
 	
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
 	}
 	
 	public void destroy() {		
@@ -45,7 +60,11 @@ public class CreateUser extends HttpServlet{
 	}
 	
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	 
+		// thymeleaf
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		String path = "/index.html";
 		
 		Pattern pattern = Pattern.compile("^[a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+.[a-zA-Z]{2,4}$");
 		Matcher matcher;
@@ -61,77 +80,71 @@ public class CreateUser extends HttpServlet{
 			passConfirm = StringEscapeUtils.escapeJava(request.getParameter("passconfirm"));
 			
 			if(!isStringValid(username)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Username cannot be empty");
+				ctx.setVariable("errorMsg_signup", "Username cannot be empty");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
 			if(!isStringValid(email)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Email cannot be empty");
+				ctx.setVariable("errorMsg_signup","Email cannot be empty");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
 			
 			matcher = pattern.matcher(email);
 			if(!matcher.matches()) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Bad email format");
+				ctx.setVariable("errorMsg_signup", "Bad email format");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;				
 			}
 			
 			if(!isStringValid(password)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Password cannot be empty");
+				ctx.setVariable("errorMsg_signup", "Password cannot be empty");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
 			if(!password.equals(passConfirm)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("Passwords don't match");
+				ctx.setVariable("errorMsg_signup", "Passwords don't match");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
 			
 		}
-		catch (NumberFormatException | NullPointerException e) {
-		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		response.getWriter().println("Incorrect or missing param values");
-		return;
+		catch (Exception e) {
+			ctx.setVariable("errorMsg_signup", "Incorrect or missing param values");
+			templateEngine.process(path, ctx, response.getWriter());
+			return;
 		}
 		
 		UserDAO uDAO = new UserDAO(connection);
+		int uID;
+		
 		try {
 			if(!uDAO.isMailAvailable(email)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("email isn't available");
+				ctx.setVariable("errorMsg_signup", "Email isn't available");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
 			if(!uDAO.isUsernameAvailable(username)) {
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				response.getWriter().println("email isn't available");
+				ctx.setVariable("errorMsg_signup", "Username isn't available");
+				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
 			
-			uDAO.registerUser(username, email, password);
+			uID = uDAO.registerUser(username, email, password);
 			
 		} catch (SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Not possible to register user");
-			return;
-		} catch (BadUserException e ) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Incorrect param values");
+			ctx.setVariable("errorMsg_signup", "Not possible to register user");
+			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
 		
-		//utente in sessione e vado in checkLogin
-		try {
-			User usr = uDAO.getUserByUsername(username);
-			request.getSession(true).setAttribute("user", usr);
-			String path = getServletContext().getContextPath()+"/GoToHome";
-			response.sendRedirect(path);
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
-			return;
-		}
+		User usr = new User();
+		usr.setId(uID);
+		usr.setUsername(username);
+		request.getSession(true).setAttribute("user", usr);
 		
+		String path_redirect = getServletContext().getContextPath()+"/GoToHome";
+		response.sendRedirect(path_redirect);
 	}
 	
 }

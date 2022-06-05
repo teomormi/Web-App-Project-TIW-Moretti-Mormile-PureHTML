@@ -5,10 +5,12 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" media="all"
 	href="../css/album_style.css" th:href="@{/css/album_style.css}" />
+	<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/style.css" th:href="@{/css/style.css}" />
 </head>
 <body>
   <!-- header menu -->
-  <div class="header_container block">
+  <div class="block" id="header_container">
     <header>
       <div id="title">
         <h1>Galleria immagini</h1>
@@ -20,12 +22,11 @@
           </ul>
         </nav>
       </header>
-    <!-- / header menu -->
     </div>
 
     <!-- Wallpaper -->
-    <div class="wallpaper" style="background-image: url('images/lago-de-como.jpg');">
-    <!--  <a>Benvenuto Matteo</a>-->
+    <div id="wallpaper" style="background-image: url('images/lago-de-como.jpg');">
+    	<p th:text="${'Nice to see you again ' + session.user.username }"></p>
     </div>
 
 
@@ -55,16 +56,16 @@
           </main>
         </section>
 
-        <div class="button_move">
-          <a class="left" href="#" th:if="${prev != null}" th:href="@{/Album(album=${album.id}, image=${prev.id})}"><button>«</button></a>
-          <a class="right" href="#" th:if="${next!=null}" th:href="@{/Album(album=${album.id}, image=${next.id})}"><button>»</button></a>
+        <div id="button_move">
+          <a id="left_button" href="#" th:if="${prev != null}" th:href="@{/Album(album=${album.id}, image=${prev.id})}"><button>«</button></a>
+          <a id="right_button" href="#" th:if="${next!=null}" th:href="@{/Album(album=${album.id}, image=${next.id})}"><button>»</button></a>
         </div>
         
         
-        <div th:if="${active != null}" class="image_details">
+        <div th:if="${active != null}" id="image_details">
           <!-- here the full scale image -->
-          <img class="fullscale_image" src="login.jpg" th:src="@{'/GetImage/' + ${active.path}}"></img>
-          <div class="image_description">
+          <img id="fullscale_image" src="login.jpg" th:src="@{'/GetImage/' + ${active.path}}"></img>
+          <div id="image_description">
           	<p th:text="${active.date}">2022/01/01 19:05:58</p>
           	<h2 class="image_description" th:text="${active.title}">Lago di Como</h2>
           	<h3 th:text="${active.description}">Descrizione dell'immagine</h3>
@@ -97,13 +98,12 @@
           </aside>
 
         </div>
-        <!-- / content body -->
     </div>
 
 
     <!-- footer -->
-    <div class="footer block">
-      <footer id="footer">
+    <div class="block" id="footer_container">
+      <footer>
         <p>Copyright &copy; 2022 - All Rights Reserved - Moretti Lorenzo / Mormile Matteo</p>
       </footer>
     </div>

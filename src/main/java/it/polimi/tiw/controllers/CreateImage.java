@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -20,6 +21,10 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AlbumImagesDAO;
@@ -33,9 +38,20 @@ public class CreateImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	String folderPath = "";
+	private TemplateEngine templateEngine;
+
+	public CreateImage() {
+		super();
+	}
 	
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
 		folderPath = getServletContext().getInitParameter("outputpath");
 	}
 	
@@ -49,8 +65,12 @@ public class CreateImage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// thymeleaf
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		String errorpath = "/WEB-INF/error.html";
 		
-		HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession();
 		
 		Integer idUser = null;
 		String title = null;
@@ -68,38 +88,43 @@ public class CreateImage extends HttpServlet {
 			checkedIds = request.getParameterValues("albums");
 			
 			if(title.equals("") || title==null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Your title cannot be empty");
+				ctx.setVariable("errorMsg", "Your title cannot be empty");
+				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
 			if(description.equals("") || description==null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Your description cannot be empty");
+				ctx.setVariable("errorMsg", "Your description cannot be empty");
+				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
 			if (checkedIds == null) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Image should have an album");
+				ctx.setVariable("errorMsg", "Image should have an album");
+				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
 			
-			// Check that the ids sent are valid == correspond to courses of actual user
+			// Check that the ids sent are valid == correspond to albums of actual user
 			AlbumDAO aDao = new AlbumDAO(connection);
 			
 			for (String s : checkedIds) {
 				Integer id = Integer.parseInt(s);
 				if(aDao.getAlbumByID(id).getUserId()!=idUser) {
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Violated access to album!");
+					ctx.setVariable("errorMsg", "Violated access to album!");
+					templateEngine.process(errorpath, ctx, response.getWriter());
 					return;
 				}
-				
 				listIds.add(id);
 			}
 			if (listIds.size() == 0) {
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "At least one album must be selected");
-					return;
+				ctx.setVariable("errorMsg","At least one album must be selected");
+				templateEngine.process(errorpath, ctx, response.getWriter());
+				return;
 			}
 			
 			//check the file			
 			if (filePart == null || filePart.getSize() <= 0) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file in request!");
+				ctx.setVariable("errorMsg","Missing file in request!");
+				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
 			
@@ -107,12 +132,14 @@ public class CreateImage extends HttpServlet {
 			String contentType = filePart.getContentType();
 			
 			if (!contentType.startsWith("image")) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "File format not permitted");
+				ctx.setVariable("errorMsg","File format not permitted");
+				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
 		}
-		catch (NumberFormatException | SQLException | NullPointerException e ) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect or missing param values");
+		catch (Exception e) {
+			ctx.setVariable("errorMsg", "Incorrect or missing param values");
+			templateEngine.process(errorpath, ctx, response.getWriter());
 			return;
 		}
 		
@@ -123,7 +150,7 @@ public class CreateImage extends HttpServlet {
 		
 		File folder = new File(folderPath);
 		if (!folder.exists()) {
-			System.out.println("Create folder for image");
+			System.out.println("Create folder for images");
 			folder.mkdirs();
 		}
 		
@@ -139,7 +166,8 @@ public class CreateImage extends HttpServlet {
 		try{
 			// check if file with same path already exist
 			if(file.exists()) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "File name already exist");
+				ctx.setVariable("errorMsg", "File name already exist");
+				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
 			
@@ -162,8 +190,8 @@ public class CreateImage extends HttpServlet {
 			try {
 					connection.rollback();
 			} catch (SQLException errorSQL) { errorSQL.printStackTrace();}
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while saving file");
+			ctx.setVariable("errorMsg", "Error while saving file");
+			templateEngine.process(errorpath, ctx, response.getWriter());
 		}		
 
 	}

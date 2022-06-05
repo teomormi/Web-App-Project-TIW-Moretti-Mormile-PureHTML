@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import it.polimi.tiw.beans.Album;
-import it.polimi.tiw.exceptions.BadAlbumException;
-
 
 public class AlbumDAO {
 	private Connection connection;
@@ -17,7 +15,7 @@ public class AlbumDAO {
 	}
 	
 	public Album getAlbumByID(int id) throws SQLException{
-		String query = "SELECT * FROM album WHERE id = ? ORDER BY date DESC";
+		String query = "SELECT * FROM album WHERE id = ?";
 		Album album = new Album();
 		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
 			pstatement.setInt(1, id);
@@ -72,17 +70,12 @@ public class AlbumDAO {
 		return albums;
 	}
 	
-	public void createAlbum(String title, int idUser) throws SQLException, BadAlbumException {
-		if(title == null || title.equals(""))
-			throw new BadAlbumException("Not valid title");
+	public void createAlbum(String title, int idUser) throws SQLException {
 		String query = "INSERT into album (title, user) VALUES (?, ?)";
-		try(PreparedStatement pstatement = connection.prepareStatement(query)) {
+		try(PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, title);
 			pstatement.setInt(2, idUser);
 			pstatement.executeUpdate();
-		} catch (SQLException e) {
-			connection.rollback();
-			throw e;
 		}
 	}
 	

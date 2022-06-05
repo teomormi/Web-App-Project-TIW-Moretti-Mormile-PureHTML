@@ -1,34 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Acme&family=Henny+Penny&display=swap');
-
-body{margin:0; padding:0; font-size:13px;font-family: 'Acme', sans-serif; background-color:#FFFFFF;}
-a{outline:none; text-decoration:none;}
-
-/*----------------------------------------------HTML 5 Overrides-------------------------------------*/
-
-article, aside, header, nav, section{display:block; margin:0; padding:0;}
-.block{display:block; width:1100px; margin:0 auto; padding:0; text-align:left;}
-
-/* ----------------------------------------------Header container-------------------------------------*/
-
-.header_container{height: 100px;width:100%;background-color: #114169;margin-bottom: 0px;border-bottom:1px solid #ffffff;}
-.header_container a{color:#ffffff; background-color:#114169;}
-
-/*----------------------------------------------Header-------------------------------------*/
-header{margin: 0px 200px;}
-header #title{padding:0px; float:left;}
-header #title h1{font-weight:normal; text-transform:uppercase;font-family: 'Henny Penny', cursive; color:#ffffff;font-size:32px;}
-
-header nav{display:block; float:right; margin:20px 0 0 0; padding:20px 0;}
-header nav ul{margin:0; padding:0; list-style:none;}
-header nav li{display:inline; margin-right:25px; text-transform:uppercase;}
-header nav li.logout{margin-right:50px;}
-header nav li a{font-size: 20px;}
-header nav li a:hover{color:#FF9900;}
-
-/* -------------------------------------- Wallpaper ----------------------------- */
-
-.wallpaper {display:block; width:100%;height: 350px;background-size: cover;text-align: center;clear: left;margin-top: 0px;}
-.wallpaper a{color: #ffffff; font-size:30px;line-height: 600px;}
 
 /*----------------------------------------------Content Area-------------------------------------*/
 
@@ -56,22 +25,22 @@ header nav li a:hover{color:#FF9900;}
 
 /* --------- Button prev next --------- */
 
-.button_move{height: 50px;}
-.button_move *{display: inline;}
-.button_move button{display: inline;background-color: #ffffff;padding: 5px 15px; font-family: "Acme";font-size:50px; border-radius: 10px;border:1px solid white;color:#89bae0;}
-.button_move .left {float:left; margin-left: 200px;}
-.button_move .right {float:right; margin-right: 200px;}
-.button_move button:hover{color:#FF9900;}
+#button_move{height: 50px;}
+#button_move *{display: inline;}
+#button_move button{display: inline;background-color: #ffffff;padding: 5px 15px; font-family: "Acme";font-size:50px; border-radius: 10px;border:1px solid white;color:#89bae0;}
+#left_button {float:left; margin-left: 200px;}
+#right_button {float:right; margin-right: 200px;}
+#button_move button:hover{color:#FF9900;}
 
 /*------------ Selected image Album------------*/
 
-.image_details {margin-top: 40px;padding-top: 20px;border-top: 1px solid #DEDEDE;}
+#image_details {margin-top: 40px;padding-top: 20px;border-top: 1px solid #DEDEDE;}
 
-.fullscale_image{margin-left: auto;  margin-right: auto;  display: block; margin-bottom: 20px;}
+#fullscale_image{margin-left: auto;  margin-right: auto;  display: block; margin-bottom: 20px;}
 
-.image_description h2{color:#114169;text-transform: uppercase;}
-.image_description p{color:#4a4a4a;font-size: 12px;text-transform: uppercase;}
-.image_description h3{border-bottom:1px solid #DEDEDE;padding-bottom: 30px;margin-bottom: 30px;text-transform: uppercase;color: black;font-size: 18px;}
+#image_description h2{color:#114169;text-transform: uppercase;}
+#image_description p{color:#4a4a4a;font-size: 12px;text-transform: uppercase;}
+#image_description h3{border-bottom:1px solid #DEDEDE;padding-bottom: 30px;margin-bottom: 30px;text-transform: uppercase;color: black;font-size: 18px;}
 
 /* ------------------ Comment--------------------------*/
 
@@ -90,9 +59,3 @@ header nav li a:hover{color:#FF9900;}
 #new_comment textarea { resize: none; }
 #new_comment input[type="submit"]{background-color: #89bae0;padding: 5px 10px;color:#ffffff;margin: 5px; font-family: "Acme";font-size: 15px; border-radius: 5px;text-transform:uppercase;}
 #new_comment input[type="submit"]:hover{background-color: #114169;color:#FF9900;}
-
-/*----------------------------------------------Footer-------------------------------------*/
-
-div.footer{border-top:1px solid #DEDEDE;width:100%;background-color: #89bae0;height: 60px;}
-
-footer p{margin-bottom: 15px; padding:0;text-align:center;color: #ffffff;margin-top: 15px;font-size:18px;text-transform:uppercase;}

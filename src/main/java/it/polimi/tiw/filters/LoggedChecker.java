@@ -21,6 +21,7 @@ public class LoggedChecker implements Filter{
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/index.html";
 
+		System.out.print("Logged filter executing ...\n");
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
 			res.sendRedirect(loginpath);

@@ -4,11 +4,11 @@
   <title>Moretti Mormile</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" media="all"
-	href="../CSS/home_style.css" th:href="@{/css/home_style.css}" />
+	href="../CSS/style.css" th:href="@{/css/style.css}" />
 </head>
 <body>
   <!-- header menu -->
-  <div class="header block">
+  <div class="block" id="header_container">
     <header>
       <div id="title">
         <h1>Galleria   immagini</h1>
@@ -19,12 +19,11 @@
           </ul>
         </nav>
       </header>
-    <!-- / header menu -->
-    </div>
+   </div>
 
     <!-- Wallpaper -->
-    <div class="wallpaper" style="background-image: url('images/lago-de-como.jpg');">
-    <p th:text="${'Nice to see you again ' + session.user.username }"></p>
+    <div id="wallpaper" style="background-image: url('images/lago-de-como.jpg');">
+    	<p th:text="${'Nice to see you again ' + session.user.username }"></p>
     </div>
 
 
@@ -73,14 +72,14 @@
         <!-- right column -->
         <aside id="right_column">
         
-          <div th:if="${albumsUser.size() == 0}" class="upload_image">
+          <div th:if="${albumsUser.size() == 0}" id="upload_image">
 				<p>PER CARICARE IMMAGINE CREA PRIMA UN TUO ALBUM</p>
           </div>
           
-          <div th:if="${albumsUser.size() > 0}" class="upload_image">
+          <div th:if="${albumsUser.size() > 0}" id="upload_image">
 	          <h2>CARICA IMMAGINE</h2>
 	          <form action="#" th:action="@{/CreateImage}" method="POST" enctype="multipart/form-data">
-	          	<div class="detail_image">
+	          	<div id="detail_image">
 		          	<label for="title">Title</label>
 		            <input type="text" name="title" />
 		            <label for="description">Description</label>
@@ -89,7 +88,6 @@
 		            <input type="file" name="file" />
 	            </div>
 	            <p>SCEGLI ALBUM DOVE SALVARE</p>
-	            <!-- albumsUser -->
 	            <div th:each="au : ${albumsUser}" class="input_checkbox">
 	            	<input type="checkbox" name="albums" th:value="${au.id}">
 	            	<label th:text="${au.title}"> Album 1</label>
@@ -99,7 +97,7 @@
         	</div>
         	
         	
-        <div class="create_album">
+        <div id="create_album">
           <h2>CREA ALBUM</h2>
           <form action="#" th:action="@{/CreateAlbum}" method="POST">
           	<label for="title">Title</label>
@@ -117,7 +115,7 @@
 
 
     <!-- footer -->
-    <div class="footer block">
+    <div class="block" id="footer_container">
       <footer>
         <p>Copyright &copy; 2022 - All Rights Reserved - Moretti Lorenzo / Mormile Matteo</p>
       </footer>

@@ -25,12 +25,34 @@
       <filter-name>LoggedChecker</filter-name>
       <filter-class>it.polimi.tiw.filters.LoggedChecker</filter-class> 
  </filter> 
+  <filter> 
+      <filter-name>NotLoggedChecker</filter-name>
+      <filter-class>it.polimi.tiw.filters.NotLoggedChecker</filter-class> 
+ </filter> 
+ <filter> 
+      <filter-name>NoCacher</filter-name>
+      <filter-class>it.polimi.tiw.filters.NoCacher</filter-class> 
+ </filter> 
+  <filter-mapping> 
+    <filter-name>NoCacher</filter-name> 
+    <url-pattern>/index.html</url-pattern> 
+    <url-pattern>/GoToHome</url-pattern> 
+    <url-pattern>/Album</url-pattern> 
+ </filter-mapping> 
+ <filter-mapping>
+    <filter-name>NotLoggedChecker</filter-name> 
+    <url-pattern>/index.html</url-pattern> 
+    <url-pattern>/CreateUser</url-pattern> 
+    <url-pattern>/CheckLogin</url-pattern> 
+ </filter-mapping>
  <filter-mapping>
     <filter-name>LoggedChecker</filter-name> 
-    <url-pattern>/home.html</url-pattern> 
-    <url-pattern>/albums_images.html</url-pattern> 
     <url-pattern>/GoToHome</url-pattern> 
     <url-pattern>/Album</url-pattern>
+    <url-pattern>/GetImage/*</url-pattern>
+    <url-pattern>/CreateImage</url-pattern>
+	<url-pattern>/CreateComment</url-pattern>
+	<url-pattern>/CreateAlbum</url-pattern>
  </filter-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

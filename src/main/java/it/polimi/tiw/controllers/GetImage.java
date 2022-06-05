@@ -5,11 +5,18 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+
 
 /**
  * Servlet implementation class GetFile
@@ -17,11 +24,16 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/GetImage/*")
 public class GetImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
 	String folderPath = "";
+	private TemplateEngine templateEngine;
 
 	public void init() throws ServletException {
-		// get folder path from webapp init parameters inside web.xml
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
 		folderPath = getServletContext().getInitParameter("outputpath");
 	}
 
@@ -31,14 +43,19 @@ public class GetImage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// thymeleaf
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		String errorpath =  "/WEB-INF/error.html";
+		
 		String pathInfo = request.getPathInfo();
 		// PathInfo: The part of the request path that is not part of the Context Path
 		// or the Servlet Path.
-		// It is either null if there is no extra path, or is a string with a leading
-		// ‘/’
+		// It is either null if there is no extra path, or is a string with a leading /
 
 		if (pathInfo == null || pathInfo.equals("/")) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file name!");
+			ctx.setVariable("errorMsg", "Missing file name!");
+			templateEngine.process(errorpath, ctx, response.getWriter());
 			return;
 		}
 
@@ -50,7 +67,8 @@ public class GetImage extends HttpServlet {
 		System.out.println(filename);
 
 		if (!file.exists() || file.isDirectory()) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not present");
+			ctx.setVariable("errorMsg", "File not present");
+			templateEngine.process(errorpath, ctx, response.getWriter());
 			return;
 		}
 
@@ -60,7 +78,7 @@ public class GetImage extends HttpServlet {
 		
 		//TODO: test what happens  if you change inline by  attachment
 		response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
-		// HERE https://stackoverflow.com/questions/1812244/																							
+																							
 		// copy file to output stream
 		Files.copy(file.toPath(), response.getOutputStream());
 	}

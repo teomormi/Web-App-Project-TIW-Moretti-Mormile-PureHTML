@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <title>Moretti Mormile</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/style.css" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <!-- header menu -->
+  <div class="block" id="header_container">
+    <header>
+      <div id="title">
+        <h1>Galleria   immagini</h1>
+      </div>
+      <nav>
+        <ul>
+        	<li><a th:href="@{/GoToHome}">Home</a></li>
+          	<li class="logout"><a th:href="@{/Logout}">Logout</a></li>
+          </ul>
+        </nav>
+      </header>
+   </div>
+
+    <!-- Wallpaper -->
+    <div id="wallpaper" style="background-image: url('images/lago-de-como.jpg');">
+    </div>
+
+
+    <!-- content -->
+    <div class="block">      
+       <div id="album_container">
+        <section id="album_title">
+          <h1 th:text=" ${errorMsg}" style="color:red;">Errore!</h1>
+        </section>	
+      </div>
+    <!-- / content body -->
+    </div>
+    
+    
+  </body>
+</html>
+

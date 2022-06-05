@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,10 +25,15 @@ import it.polimi.tiw.dao.AlbumDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 
 @WebServlet("/GoToHome")
+@MultipartConfig
 public class GoToHomePage extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	private Connection connection;
 	private TemplateEngine templateEngine;
+	
+	public GoToHomePage() {
+		super();
+	}
 	
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
@@ -49,8 +55,13 @@ public class GoToHomePage extends HttpServlet{
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
-	
-		HttpSession session = request.getSession(false);
+		// thymeleaf
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		String path = "/WEB-INF/home.html";
+		String errorpath = "/WEB-INF/error.html";
+		
+		HttpSession session = request.getSession();
 		Integer idUser = null;
 		
 		
@@ -66,15 +77,15 @@ public class GoToHomePage extends HttpServlet{
 			albumsUser = aDao.getAlbumsByUserID(idUser);
 		}
 		catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover albums");
+			ctx.setVariable("errorMsg","Not possible to recover albums");
+			templateEngine.process(errorpath, ctx, response.getWriter());
 			return;
 		}
 		
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		
 		ctx.setVariable("albumsOther", albumsOther);
 		ctx.setVariable("albumsUser", albumsUser);
-		String path = "/WEB-INF/home.html";
+		
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 }

@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import it.polimi.tiw.beans.Comment;
-import it.polimi.tiw.exceptions.BadCommentException;
 
 public class CommentDAO {
 	private Connection connection;
@@ -36,18 +35,13 @@ public class CommentDAO {
 		return comments;
 	}
 	
-	public void createComment(int idImg, String comment, int idUser) throws BadCommentException, SQLException {
-		if(comment==null || comment.equals(""))
-			throw new BadCommentException("Comment isn't valid");
+	public void createComment(int idImg, String comment, int idUser) throws SQLException {
 		String query = "INSERT into comment (user, text, image) VALUES (?, ?, ?)";
 		try(PreparedStatement pstatement = connection.prepareStatement(query);){
 			pstatement.setInt(1, idUser);
 			pstatement.setString(2, comment);
 			pstatement.setInt(3, idImg);
 			pstatement.executeUpdate();
-		} catch (SQLException e) {
-			connection.rollback();
-			throw e;
 		}	
 	}
 

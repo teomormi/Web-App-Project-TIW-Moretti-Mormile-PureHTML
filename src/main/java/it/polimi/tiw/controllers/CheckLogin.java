@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
 
 @WebServlet("/CheckLogin")
+@MultipartConfig
 public class CheckLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
@@ -43,40 +45,48 @@ public class CheckLogin extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		// thymeleaf
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		String path = "/index.html";
+		
+		
 		// obtain and escape params
 		String usrn = null;
 		String pwd = null;
+		
 		try {
 			usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
 			pwd = StringEscapeUtils.escapeJava(request.getParameter("password"));
 			if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {
-				throw new Exception("Missing or empty credential value");
+				ctx.setVariable("errorMsg_Login", "Username or password cannot be empty");
+				templateEngine.process(path, ctx, response.getWriter());
+				
 			}
 
 		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing credential value");
+			ctx.setVariable("errorMsg_Login", "Missing credential value");
+			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
-
+		
 		// query db to authenticate for user
 		UserDAO userDao = new UserDAO(connection);
 		User user = null;
 		try {
 			user = userDao.checkLogin(usrn,usrn, pwd);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Possible to check credentials");
+			ctx.setVariable("errorMsg_Login", "Not Possible to check credentials");
+			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}
 
 		// If the user exists, add info to the session and go to home page, otherwise
 		// show login page with error message
 
-		String path;
+		
 		if (user == null) {
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 			ctx.setVariable("errorMsg_Login", "Incorrect username or password");
-			path = "/index.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		} else {
 			request.getSession().setAttribute("user", user);

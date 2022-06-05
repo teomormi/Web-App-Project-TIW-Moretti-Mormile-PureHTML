@@ -21,8 +21,10 @@ public class NotLoggedChecker implements Filter{
 		HttpServletResponse res = (HttpServletResponse) response;
 		String loginpath = req.getServletContext().getContextPath() + "/GoToHome";
 
+		System.out.print("Not Logged filter executing ...\n");
 		HttpSession s = req.getSession();
 		if (s.getAttribute("user") != null) {
+			System.out.println("User already auth");
 			res.sendRedirect(loginpath);
 			return;
 		}
