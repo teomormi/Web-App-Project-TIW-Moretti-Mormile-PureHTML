@@ -13,11 +13,11 @@
   <div class="block" id="header_container">
     <header>
       <div id="title">
-        <h1>Galleria immagini</h1>
+        <h1>Image gallery</h1>
       </div>
       <nav>
         <ul>
-          <li><a  th:href="@{/GoToHome}">Albums</a><li>
+          <li><a  th:href="@{/GoToHome}">HOME</a><li>
           <li class="logout"><a th:href="@{/Logout}">Logout</a></li>
           </ul>
         </nav>
@@ -75,24 +75,24 @@
           <div th:if="${comments!=null && comments.size()>0}" id="comment_container">
 			<h2>Commenti</h2>
 			<article th:each="c : ${comments}">
-              <h2 th:text="${c.user}">Matteo</h2>
+			  <h2 th:text="${c.user}">Matteo</h2>
               <p th:text="${c.text}">Immagine fantastica!</p>
             </article>
           </div>
 	
 		  <div th:if="${comments==null || comments.size()==0}">
-			<h2>Nessun commento da visualizzare</h2>
+			<h2>No comments to display</h2>
 		 </div>
 			
          <!-- right column -->
           <aside id="right_column">
             <div id="new_comment">
-            <h2>Crea nuovo commento</h2>
+            <h2>Create a new comment</h2>
             <form method="post" th:action="@{/CreateComment}">
               <textarea name="text" rows="4" cols="30"></textarea>
               <input type="hidden" name="image" th:value="${active.id}"/>
               <input type="hidden" name="album" th:value="${album.id}">
-              <input type="submit" value="Invia">
+              <input type="submit" value="Create">
             </form>
             </div>
           </aside>

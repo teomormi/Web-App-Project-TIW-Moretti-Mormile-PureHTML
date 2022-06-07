@@ -11,7 +11,7 @@
   <div class="block" id="header_container">
     <header>
       <div id="title">
-        <h1>Galleria   immagini</h1>
+        <h1>Image Gallery</h1>
       </div>
       <nav>
         <ul>
@@ -31,11 +31,11 @@
     <div class="block">      
        <div id="album_container">
         <section id="album_title">
-          <h1>Scegli l'album da visualizzare o creane uno nuovo </h1>
+          <h1>Choose the album to view or create a new one </h1>
         </section>	
         
         <div th:if="${(albumsOther.size() == 0)&&(albumsUser.size()==0)}">
-			<h2>Nessun album da visualizzare</h2>
+			<h2>No albums to view</h2>
         </div>
 	
 		<div th:if="${(albumsUser.size() > 0)||(albumsOther.size() > 0)}">
@@ -45,13 +45,13 @@
 					<article th:each="a : ${albumsUser}">
 						<p th:text="${a.date}">2020-05-17</p>
 						<h2 th:text="${a.title}">Lorum ipsum dolor</h2>
-            			<a href="#" th:href="@{/Album(album = ${a.id})}"><button>Mostra</button></a>
+            			<a href="#" th:href="@{/Album(album = ${a.id})}"><button>Show</button></a>
 					</article>
 					<h2>OTHER ALBUMS</h2>
 					<article th:each="ao : ${albumsOther}">
 						<p th:text="${ao.date}">2020-05-17</p>
 						<h2 th:text="${ao.title}">Lorum ipsum dolor</h2>
-            			<a href="#" th:href="@{/Album(album = ${ao.id})}"><button>Mostra</button></a>
+            			<a href="#" th:href="@{/Album(album = ${ao.id})}"><button>Show</button></a>
 					</article>
 				</div>
 				<article>
@@ -73,11 +73,11 @@
         <aside id="right_column">
         
           <div th:if="${albumsUser.size() == 0}" id="upload_image">
-				<p>PER CARICARE IMMAGINE CREA PRIMA UN TUO ALBUM</p>
+				<p>TO LOAD IMAGE CREATE YOUR ALBUM FIRST</p>
           </div>
           
           <div th:if="${albumsUser.size() > 0}" id="upload_image">
-	          <h2>CARICA IMMAGINE</h2>
+	          <h2>UPLOAD IMAGE</h2>
 	          <form action="#" th:action="@{/CreateImage}" method="POST" enctype="multipart/form-data">
 	          	<div id="detail_image">
 		          	<label for="title">Title</label>
@@ -87,22 +87,22 @@
 		            <label for="file">File</label>
 		            <input type="file" name="file" />
 	            </div>
-	            <p>SCEGLI ALBUM DOVE SALVARE</p>
+	            <p>CHOOSE ALBUMS WHERE TO SAVE</p>
 	            <div th:each="au : ${albumsUser}" class="input_checkbox">
 	            	<input type="checkbox" name="albums" th:value="${au.id}">
 	            	<label th:text="${au.title}"> Album 1</label>
 				</div>
-				<input type="submit" value="Salva immagine">
+				<input type="submit" value="Upload image">
 	          </form>
         	</div>
         	
         	
         <div id="create_album">
-          <h2>CREA ALBUM</h2>
+          <h2>CREATE ALBUM</h2>
           <form action="#" th:action="@{/CreateAlbum}" method="POST">
           	<label for="title">Title</label>
           	<input type="text" name="title">
-            <input type="submit" value="Crea Album">
+            <input type="submit" value="Create Album">
           </form>
         </div>
         </aside>

@@ -22,6 +22,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AlbumDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.InputValidator;
 
 @WebServlet("/CreateAlbum")
 @MultipartConfig
@@ -70,7 +71,7 @@ public class CreateAlbum extends HttpServlet{
 		
 		try {
 			title = StringEscapeUtils.escapeJava(request.getParameter("title"));
-			if(title.equals("") || title==null) {
+			if(!InputValidator.isStringValid(title)) {
 				ctx.setVariable("errorMsg","Your album title cannot be empty");
 				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;

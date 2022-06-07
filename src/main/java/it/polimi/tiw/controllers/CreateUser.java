@@ -23,6 +23,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.InputValidator;
 
 @WebServlet("/CreateUser")
 @MultipartConfig
@@ -52,13 +53,7 @@ public class CreateUser extends HttpServlet{
 			e.printStackTrace();
 		}
 	}
-	
-	boolean isStringValid(String s) {
-		if(s==null || s.equals(""))
-			return false;
-		return true;
-	}
-	
+
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	 
 		// thymeleaf
@@ -79,12 +74,12 @@ public class CreateUser extends HttpServlet{
 			password = StringEscapeUtils.escapeJava(request.getParameter("password"));
 			passConfirm = StringEscapeUtils.escapeJava(request.getParameter("passconfirm"));
 			
-			if(!isStringValid(username)) {
+			if(!InputValidator.isStringValid(username)) {
 				ctx.setVariable("errorMsg_signup", "Username cannot be empty");
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
 			}
-			if(!isStringValid(email)) {
+			if(!InputValidator.isStringValid(email)) {
 				ctx.setVariable("errorMsg_signup","Email cannot be empty");
 				templateEngine.process(path, ctx, response.getWriter());
 				return;
@@ -97,7 +92,7 @@ public class CreateUser extends HttpServlet{
 				return;				
 			}
 			
-			if(!isStringValid(password)) {
+			if(!InputValidator.isStringValid(password)) {
 				ctx.setVariable("errorMsg_signup", "Password cannot be empty");
 				templateEngine.process(path, ctx, response.getWriter());
 				return;

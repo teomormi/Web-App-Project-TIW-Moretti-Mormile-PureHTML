@@ -24,6 +24,7 @@ import it.polimi.tiw.dao.AlbumImagesDAO;
 import it.polimi.tiw.dao.CommentDAO;
 import it.polimi.tiw.dao.ImageDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.InputValidator;
 
 @WebServlet("/CreateComment")
 @MultipartConfig
@@ -75,8 +76,14 @@ public class CreateComment extends HttpServlet{
 			albumId = Integer.parseInt(request.getParameter("album"));
 			text = StringEscapeUtils.escapeJava(request.getParameter("text"));
 			
-			if(text.equals("") || text==null || albumId == null || imageId == null) {
-				ctx.setVariable("errorMsg", "Your comment cannot be empty");
+			if(!InputValidator.isStringValid(text)) {
+				ctx.setVariable("errorMsg", "Your comment text cannot be empty");
+				templateEngine.process(errorpath, ctx, response.getWriter());
+				return;
+			}
+					
+			if(albumId == null || imageId == null) {
+				ctx.setVariable("errorMsg", "Incorrect param values");
 				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}

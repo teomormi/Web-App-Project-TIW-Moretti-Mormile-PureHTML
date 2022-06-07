@@ -31,6 +31,7 @@ import it.polimi.tiw.dao.AlbumImagesDAO;
 import it.polimi.tiw.dao.AlbumDAO;
 import it.polimi.tiw.dao.ImageDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.InputValidator;
 
 @WebServlet("/CreateImage")
 @MultipartConfig
@@ -43,6 +44,7 @@ public class CreateImage extends HttpServlet {
 	public CreateImage() {
 		super();
 	}
+	
 	
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
@@ -87,12 +89,12 @@ public class CreateImage extends HttpServlet {
 			description = StringEscapeUtils.escapeJava(request.getParameter("description"));
 			checkedIds = request.getParameterValues("albums");
 			
-			if(title.equals("") || title==null) {
+			if(!InputValidator.isStringValid(title))  {
 				ctx.setVariable("errorMsg", "Your title cannot be empty");
 				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
 			}
-			if(description.equals("") || description==null) {
+			if(!InputValidator.isStringValid(description))  {
 				ctx.setVariable("errorMsg", "Your description cannot be empty");
 				templateEngine.process(errorpath, ctx, response.getWriter());
 				return;
@@ -142,7 +144,6 @@ public class CreateImage extends HttpServlet {
 			templateEngine.process(errorpath, ctx, response.getWriter());
 			return;
 		}
-		
 		
 		
 		String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();

@@ -49,9 +49,7 @@ public class GetImage extends HttpServlet {
 		String errorpath =  "/WEB-INF/error.html";
 		
 		String pathInfo = request.getPathInfo();
-		// PathInfo: The part of the request path that is not part of the Context Path
-		// or the Servlet Path.
-		// It is either null if there is no extra path, or is a string with a leading /
+		// PathInfo: The part of the request path that is not part of the Context Path or the Servlet Path.
 
 		if (pathInfo == null || pathInfo.equals("/")) {
 			ctx.setVariable("errorMsg", "Missing file name!");
@@ -59,15 +57,14 @@ public class GetImage extends HttpServlet {
 			return;
 		}
 
-		// substring(1) useful to remove first "/" in path info
-		// because it is not part of the filename
+		// substring(1) useful to remove first "/" in path info because it is not part of the filename
 		String filename = URLDecoder.decode(pathInfo.substring(1), "UTF-8");
 
 		File file = new File(folderPath, filename); //folderPath inizialized in init
 		System.out.println(filename);
 
 		if (!file.exists() || file.isDirectory()) {
-			ctx.setVariable("errorMsg", "File not present");
+			ctx.setVariable("errorMsg", "File not found");
 			templateEngine.process(errorpath, ctx, response.getWriter());
 			return;
 		}

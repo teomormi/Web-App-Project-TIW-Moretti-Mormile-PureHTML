@@ -21,6 +21,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDAO;
 import it.polimi.tiw.utils.ConnectionHandler;
+import it.polimi.tiw.utils.InputValidator;
 
 @WebServlet("/CheckLogin")
 @MultipartConfig
@@ -58,11 +59,18 @@ public class CheckLogin extends HttpServlet {
 		try {
 			usrn = StringEscapeUtils.escapeJava(request.getParameter("username"));
 			pwd = StringEscapeUtils.escapeJava(request.getParameter("password"));
-			if (usrn == null || pwd == null || usrn.isEmpty() || pwd.isEmpty()) {
-				ctx.setVariable("errorMsg_Login", "Username or password cannot be empty");
+			
+			if(!InputValidator.isStringValid(usrn)) {
+				ctx.setVariable("errorMsg_Login", "Username cannot be empty");
 				templateEngine.process(path, ctx, response.getWriter());
-				
+				return;
 			}
+			if(!InputValidator.isStringValid(pwd)) {
+				ctx.setVariable("errorMsg_Login", "Password cannot be empty");
+				templateEngine.process(path, ctx, response.getWriter());
+				return;
+			}
+			
 
 		} catch (Exception e) {
 			ctx.setVariable("errorMsg_Login", "Missing credential value");
@@ -76,7 +84,7 @@ public class CheckLogin extends HttpServlet {
 		try {
 			user = userDao.checkLogin(usrn,usrn, pwd);
 		} catch (SQLException e) {
-			ctx.setVariable("errorMsg_Login", "Not Possible to check credentials");
+			ctx.setVariable("errorMsg_Login", "Error during credentials check");
 			templateEngine.process(path, ctx, response.getWriter());
 			return;
 		}

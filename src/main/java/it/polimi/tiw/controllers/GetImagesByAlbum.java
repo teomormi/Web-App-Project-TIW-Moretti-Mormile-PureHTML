@@ -140,8 +140,7 @@ public class GetImagesByAlbum extends HttpServlet {
 			
 			int minCurrentIndex = (int)Math.floorDiv(imageIndex, pageSize) * pageSize; //indice prima immagine a sinistra nel menu della scelta. floorDiv return intero approssimato per difetto del risultato tra la divisione dei due terimini
 			int maxCurrentIndex = (int)Math.min(listImages.size(),minCurrentIndex + pageSize);
-			//System.out.println(minCurrentIndex);
-			//System.out.println(maxCurrentIndex);
+			
 			pageImages = listImages.subList(minCurrentIndex, maxCurrentIndex);
 			
 			//Per i click di next e prev
