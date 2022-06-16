@@ -24,6 +24,7 @@ public class LoggedChecker implements Filter{
 		System.out.print("Logged filter executing ...\n");
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("user") == null) {
+			System.out.println("Not logged");
 			res.sendRedirect(loginpath);
 			return;
 		}

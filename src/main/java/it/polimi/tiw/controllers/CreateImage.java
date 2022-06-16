@@ -8,11 +8,9 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -109,31 +107,26 @@ public class CreateImage extends HttpServlet {
 				return;
 			}
 			
-			// Check that the ids sent are valid == correspond to albums of actual user
+			// Check that the ids sent are integer, owned by user and not duplicated
 			AlbumDAO aDao = new AlbumDAO(connection);
+			Set<String> duplicateitems = new HashSet<>();
 			
-			for (String s : checkedIds) {
-				Integer id = Integer.parseInt(s);
+			
+			for (String stringId : checkedIds) {
+				Integer id = Integer.parseInt(stringId);
+				listIds.add(id);
 				if(aDao.getAlbumByID(id).getUserId()!=idUser) {
 					ctx.setVariable("errorMsg", "Violated access to album!");
 					templateEngine.process(errorpath, ctx, response.getWriter());
 					return;
 				}
-				listIds.add(id);
+				
+				if (!duplicateitems.add(stringId)) {
+					ctx.setVariable("errorMsg", " Duplicate album id");
+					templateEngine.process(errorpath, ctx, response.getWriter());
+					return;
+				}
 			}
-			
-			// Id duplicati
-			Set<String> items = new HashSet<>();
-			Set<String> duplicateItems = Arrays.asList(checkedIds).stream()
-				 		.filter(id -> !items.add(id)) // Set.add() returns false if the element was already in the set.
-				 		.collect(Collectors.toSet());
-			
-			if(duplicateItems.size( )> 0) {
-				ctx.setVariable("errorMsg", " Duplicate album id");
-				templateEngine.process(errorpath, ctx, response.getWriter());
-				return;
-			}
-			
 			
 			if (listIds.size() == 0) {
 				ctx.setVariable("errorMsg","At least one album must be selected");
@@ -207,8 +200,10 @@ public class CreateImage extends HttpServlet {
 			
 		} catch (Exception e) {
 			try {
-					connection.rollback();
-			} catch (SQLException errorSQL) { errorSQL.printStackTrace();}
+				connection.rollback();
+				if(file.exists())
+					file.delete();
+			} catch (Exception ex) {ex.printStackTrace();}
 			ctx.setVariable("errorMsg", "Error while saving file");
 			templateEngine.process(errorpath, ctx, response.getWriter());
 		}		
