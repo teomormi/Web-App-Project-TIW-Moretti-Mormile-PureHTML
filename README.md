@@ -1,4 +1,4 @@
-# Web-App-Project-TIW-Moretti-Mormile-PureHTML
+# Web App Project for TIW Course at Politecnico di Milano - AY 2021-2022 (PureHTML version)
 Final project for the course **"Informatic Technologies for the Web"** at Politecnico di Milano (2021/2022).
 
 ## Group components:
